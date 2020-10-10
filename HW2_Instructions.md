@@ -45,14 +45,14 @@ Start off by copying the files from this repository into your own, and
 add them to git. The files and directories you need are:
 
 ```
-GiftcardSite LegacySite images templates manage.py
+GiftcardSite LegacySite images templates manage.py import_dbs.sh products.csv users.csv 
 ```
 
 After you compy these directories and files over, be sure to generate 
 the database that django relies on. This can be done by running the commands:
 
 ```
-python manage.py makemigration LegacySite
+python manage.py makemigrations LegacySite
 python manage.py makemigrations
 python manage.py migrate
 sh import_dbs.sh
