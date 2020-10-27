@@ -1,17 +1,25 @@
-#!/usr/bin/env python
-
-import sqlite3
 import csv
 
-def import_csv(cursor, fname, table):
-    for row in csv.reader(open(fname)):
-        cols = len(row)
-        rowstr = ', '.join('?'*cols)
-        cursor.execute('INSERT INTO %s VALUES (%s)' % (table, rowstr), row)
+from LegacySite.models import Product, User
 
-db = sqlite3.connect('db.sqlite3')
-c = db.cursor()
-import_csv(c, 'users.csv', 'LegacySite_user')
-import_csv(c, 'products.csv', 'LegacySite_product')
-db.commit()
-db.close()
+def import_products(fname):
+    for row in csv.reader(open(fname)):
+        prod = Product.objects.create(
+            product_id=row[0],
+            product_name=row[1],
+            product_image_path=row[2],
+            recommended_price=row[3],
+            description=row[4],
+        )
+        prod.save()
+
+def import_users(fname):
+    for row in csv.reader(open(fname)):
+        user = User.objects.create(
+            username=row[2],
+            password=row[3],
+        )
+        user.save()
+
+import_users('users.csv')
+import_products('products.csv')
