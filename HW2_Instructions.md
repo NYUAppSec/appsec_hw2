@@ -22,7 +22,7 @@ mimic in any way.
 
 ## Part 0: Setting up Your Environment
 
-In order to complete this assignment you will need the git VCS, Travis, 
+In order to complete this assignment you will need the git VCS, GitHub Actions, 
 python 3 and the Django web framework. Some additional tools that may 
 be useful for this assignment (but are not necessary) are 
 sqlite, burp suite, the python requests library, and the web development 
@@ -35,7 +35,7 @@ it is in your best interest to continue to follow git best practices.
 
 When you are ready to begin the project, please create a repository 
 on GitHub for your second assignment. Like before, be sure to make 
-the repository **private**. Create a travis.yml file, which you will 
+the repository **private**. Create a GitHub Actions YAML file, which you will 
 use to test your program later.
 
 
@@ -45,7 +45,7 @@ Start off by copying the files from this repository into your own, and
 add them to git. The files and directories you need are:
 
 ```
-GiftcardSite LegacySite images templates manage.py import_dbs.sh products.csv users.csv 
+GiftcardSite LegacySite images templates manage.py import_dbs.py import_dbs.sh products.csv users.csv 
 ```
 
 After you compy these directories and files over, be sure to generate 
@@ -53,9 +53,8 @@ the database that django relies on. This can be done by running the commands:
 
 ```
 python manage.py makemigrations LegacySite
-python manage.py makemigrations
 python manage.py migrate
-sh import_dbs.sh
+bash import_dbs.sh
 ```
 
 Read through the `models.py` and `views.py` files (and the helper
@@ -100,7 +99,7 @@ and verify that the attacks no long succeed on your site. You are
 allowed to use django plugins and other libraries to fix these 
 vulnerabilities. To make sure that these bugs don't come up again as
 the code evolves, write some test cases for django that test for 
-these vulnerabilites. Then have Travis run these tests with each push.
+these vulnerabilites. Then have GitHub Actions run these tests with each push.
 
 When you are finished with this section, please mark your part 1 
 submission by tagging the desired commit with the tag "part_1_complete"
@@ -119,19 +118,29 @@ database, but it seems they did not know how to do that, or did not want
 to. The code you received does not encrypt the database at all, but your
 company wants to ensure the data's protection at rest.
 
-Your second job, therefore, is to modify this code to encrypt the data in
-the database. You are allowed to use django plugins or external libraries
-to implement this. Please see the lecture content for tips on proper key
-management and the different methods of doing database encryption.
+Your second job, therefore, is to modify this code to encrypt the gift card
+data in the database. You are allowed to use django plugins or external
+libraries to implement this. Please see the lecture content for tips on proper
+key management and the different methods of doing database encryption.
 
-When you are finished with this part of the assignment, please briefly
-explain how you implemented the database encryption, how you managed keys,
-and why you choose to manage keys that way. This should be stored in a
-file called "encryption_explanation.txt" in a folder called "part 2" in
-the git repository. 
+When you are finished with this part of the assignment, please briefly explain
+how you implemented the database encryption, how you managed keys, and why you
+choose to manage keys that way. You should also note any problems you
+encountered implementing database encryption and how these were resolved. This
+should be stored in a file called "encryption_explanation.txt" in a folder
+called "part 2" in the git repository. 
 
 When you finish this part of the assignment, please mark your part 2 
 submission by tagging the desired commit with the tag "part_2_complete"
+
+Hints:
+
+* You may want to look into the [django-cryptography](https://github.com/georgemarshall/django-cryptography) package.
+
+* Not all database fields can be encrypted -- in particular, keys that are used for the structure of the database, like primary and foreign keys, cannot be encrypted.
+
+* You should test the functionality of the site after encrypting a field. You may find that some functionality (like search) no longer works after encrypting a field. You should modify the application code to fix this.
+
 
 ## Grading
 
@@ -142,7 +151,7 @@ Part 1 is worth 65 points:
 * 25 points for your attack cases
 * 15 points for all fixes
 * 10 points for the bug writeup
-* 10 points for Travis regression testing
+* 10 points for GitHub Actions testing
 * 05 points for signed git commits.
 
 Part 2 is worth 35 points:
@@ -164,10 +173,10 @@ Your TA is: **Manan-bit**
 The repository should contain:
 
 * Part 1
-  * Your .travis.yml
+  * Your GitHub Actions YAML
   * At least one signed commit
   * A directory named `part1` that contains your attack cases.
-  * An updated .travis.yml that runs your tests.
+  * An updated GitHub Actions YAML that runs your tests.
   * A commit with the fixed version of the code (if you like, this
     commit can also contain the files mentioned above) tagged as
     part_1_complete.
