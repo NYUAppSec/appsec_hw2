@@ -201,10 +201,3 @@ it exists now is difficult to read, and therefore difficult to fix. It
 also unecessarily uses home-brewed solutions for things that can be solved
 easily with common libraries or Django built-ins. This is certainly not
 code that you should seek to reproduce, or use as an example of good code.
-
-A cleanly written version of this will be released after the assignment is
-over. When this is released, compare it to the code you have and see what
-the differences are, and how much simpler things could be if standard
-solutions were used. We suspect that the cleanly written version will be
-relatively bug-free, but you are encouraged to try to attack it and
-prove us wrong!
