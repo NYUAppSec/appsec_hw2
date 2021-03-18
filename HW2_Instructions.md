@@ -75,8 +75,8 @@ write:
 2. *One* attack that allows you to buy a force another user to gift
    a gift card to your account without their knowledge.
 3. *One* attack that allows you to obtain the salted password for a user
-   given their username. The database should contain a user named 
-   ``admin.''
+   given their username. The database already contains a user named 
+   `admin` that you can use for testing.
 4. *One* attack that exploits another attack not listed above on the server.
    Some hints for this section are: looking at the way the passwords are
    stored, and looking at how interactions are done with the giftcardreader
