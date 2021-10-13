@@ -33,23 +33,10 @@ git best practices like writing good commit messages. However, we will be
 checking for signed commits, since they are security relevant. Additionally, 
 it is in your best interest to continue to follow git best practices.
 
-When you are ready to begin the project, please create a repository 
-on GitHub for your second assignment. Like before, be sure to make 
-the repository **private**. Create a GitHub Actions YAML file, which you will 
-use to test your program later.
-
-
 ## Part 1: Auditing and Test Cases
 
-Start off by copying the files from this repository into your own, and
-add them to git. The files and directories you need are:
-
-```
-GiftcardSite LegacySite images templates manage.py import_dbs.py import_dbs.sh products.csv users.csv 
-```
-
-After you compy these directories and files over, be sure to generate 
-the database that django relies on. This can be done by running the commands:
+After cloning the repository, generate the database that django relies on. This
+can be done by running the commands:
 
 ```
 python manage.py makemigrations LegacySite
@@ -162,14 +149,7 @@ Part 2 is worth 35 points:
 
 ## What to Submit
 
-On NYU Classes, submit a link to your GitHub repository. The repository
-should be **private**, and you should add the instructor/TA's GitHub
-account as a contributor to give them access for grading.
-
-For this section, your instructor is: **moyix**
-
-Your TA is: **Manan-bit**
-
+On Brightspace, submit a link to your GitHub repository. 
 The repository should contain:
 
 * Part 1
@@ -181,8 +161,7 @@ The repository should contain:
     commit can also contain the files mentioned above) tagged as
     part_1_complete.
 * Part 2
-  * A directory named `part2` which contains your 
-    `encryption_explanation.txt' file.
+  * A directory named `part2` which contains your `encryption_explanation.txt` file.
   * A commit with the version of the code that supports DB encryption
     (if you like, this commit can also contain the files mentioned above)
     tagged as part_2_complete.
