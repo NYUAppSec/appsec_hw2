@@ -3,9 +3,20 @@ from binascii import hexlify
 from hashlib import sha256
 from django.conf import settings
 from os import urandom, system
+import sys, os
 
 SEED = settings.RANDOM_SEED
-CARD_PARSER = 'giftcardreader'
+
+LEGACY_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+if sys.platform == 'win32':
+    CARD_PARSER = os.path.join(LEGACY_ROOT, '..', 'bins', 'giftcardreader_win.exe')
+elif sys.platform == 'linux':
+    CARD_PARSER = os.path.join(LEGACY_ROOT, '..', 'bins', 'giftcardreader_linux')
+elif sys.platform == 'darwin':
+    CARD_PARSER = os.path.join(LEGACY_ROOT, '..', 'bins', 'giftcardreader_mac')
+else:
+    raise Exception("Unsupported platform: {}".format(sys.platform))
 
 # KG: Something seems fishy here. Why are we seeding here?
 def generate_salt(length, debug=True):
@@ -50,7 +61,7 @@ def parse_card_data(card_file_data, card_path_name):
     with open(card_path_name, 'wb') as card_file:
         card_file.write(card_file_data)
     # KG: Are you sure you want the user to control that input?
-    ret_val = system(f"./{CARD_PARSER} 2 {card_path_name} > tmp_file")
+    ret_val = system(f"{CARD_PARSER} 2 {card_path_name} > tmp_file")
     if ret_val != 0:
         return card_file_data
     with open("tmp_file", 'r') as tmp_file:
