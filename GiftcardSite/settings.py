@@ -140,3 +140,13 @@ STATIC_URL = '/static/'
 
 # Auth Backends
 AUTHENTICATION_BACKENDS = ['LegacySite.models.OurBackend']
+
+# Django 3.2 compat
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+# ShoddyCorp note: hack to get around stupid browser restrictions.
+# Fixes issue with Chrome not allowing partner sites to access the site.
+SESSION_COOKIE_SAMESITE = 'Lax'
+# Don't know if this is necessary but all this stupid security stuff just
+# makes my job harder
+SESSION_COOKIE_HTTPONLY = False

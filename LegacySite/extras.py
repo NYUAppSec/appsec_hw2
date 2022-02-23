@@ -41,12 +41,17 @@ def check_password(user, password):
         return True
     return False
 
+def get_fake_signature(card_file_data):
+    return urandom(16).hex()
+
 def write_card_data(card_file_path, product, price, customer):
     data_dict = {}
     data_dict['merchant_id'] = product.product_name
     data_dict['customer_id'] = customer.username
     data_dict['total_value'] = price
-    record = {'record_type':'amount_change', "amount_added":2000,'signature':'[ insert crypto signature here ]'}
+    record = {'record_type':'amount_change', "amount_added":2000,}
+    # TODO: replace this with a real signature
+    record['signature'] = get_fake_signature(json.dumps(record))
     data_dict['records'] = [record,]
     with open(card_file_path, 'w') as card_file:
         card_file.write(json.dumps(data_dict))
@@ -61,8 +66,9 @@ def parse_card_data(card_file_data, card_path_name):
     with open(card_path_name, 'wb') as card_file:
         card_file.write(card_file_data)
     # KG: Are you sure you want the user to control that input?
+    print(f"running: {CARD_PARSER} 2 {card_path_name} > tmp_file")
     ret_val = system(f"{CARD_PARSER} 2 {card_path_name} > tmp_file")
     if ret_val != 0:
         return card_file_data
-    with open("tmp_file", 'r') as tmp_file:
+    with open("tmp_file", 'rb') as tmp_file:
         return tmp_file.read()

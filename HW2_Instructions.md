@@ -23,20 +23,25 @@ mimic in any way.
 ## Part 0: Setting up Your Environment
 
 In order to complete this assignment you will need the git VCS, GitHub Actions, 
-python 3 and the Django web framework. Some additional tools that may 
-be useful for this assignment (but are not necessary) are 
-sqlite, burp suite, the python requests library, and the web development 
-console of your favorite browser. If you are runing a \*NIX system, 
+python 3 and the Django web framework (which you can install with `pip install
+django`). Some additional tools that may be useful for this assignment (but are
+not necessary) are sqlite, burp suite, the python requests library, and the web
+development console of your favorite browser. If you are runing a \*NIX system, 
 these tools should be pre-installed and/or available in your distribution's 
-package manager. Like in the last assignment we will not be checking for 
-git best practices like writing good commit messages. However, we will be
-checking for signed commits, since they are security relevant. Additionally, 
-it is in your best interest to continue to follow git best practices.
+package manager. Like in the last assignment we will not be checking for git
+best practices like writing good commit messages. However, we will be checking
+for signed commits, since they are security relevant. Additionally, it is in
+your best interest to continue to follow git best practices.
+
+When you are ready to begin the project, use the Github Classroom invitation to
+create your repository. You should also create a GitHub Actions YAML file, which
+you will use to test your program later.
+
 
 ## Part 1: Auditing and Test Cases
 
-After cloning the repository, generate the database that django relies on. This
-can be done by running the commands:
+After cloning your repository, be sure to generate the database that django
+relies on. This can be done by running the commands:
 
 ```
 python manage.py makemigrations LegacySite
@@ -49,6 +54,7 @@ functions in `extras.py`) in the LegacySite folder to get a feel
 for what the web site is doing and how. You can also try running
 the test server and interacting with the site by running the
 following command and browsing to 127.0.0.1:8000.
+
 ```
 python manage.py runserver
 ```
@@ -59,11 +65,11 @@ write:
 
 1. *One* attack, that exploits a XSS (cross-site scripting) 
    vulnerability.
-2. *One* attack that allows you to buy a force another user to gift
+2. *One* attack that allows you to force another user to gift
    a gift card to your account without their knowledge.
 3. *One* attack that allows you to obtain the salted password for a user
-   given their username. The database already contains a user named 
-   `admin` that you can use for testing.
+   given their username. The database contains a user named 
+   ``admin.'' that you can use for testing the attack.
 4. *One* attack that exploits another attack not listed above on the server.
    Some hints for this section are: looking at the way the passwords are
    stored, and looking at how interactions are done with the giftcardreader
@@ -73,23 +79,42 @@ write:
    functionalities you came across. There are more than the bugs mentioned
    above.
 
-These attacks can take the form of a supplied URL, a POST made to the 
-web page, a gift card file, a web page, a javascript function, or some
-other method of attack. To create your attacks, you may want to look at 
-the HTML source code of the templates and the code of each view, and 
-find a way they can be exploited. Tools like burp suite can help in
-finding ways to attack the site, but are not required. Please submit 
-these attacks in a folder called "part 1" in your git repository.
+These attacks can take the form of a supplied URL, a gift card file, a web page,
+a javascript function, or some other method of attack. To create your attacks,
+you may want to look at the HTML source code of the templates and the code of
+each view, and find a way they can be exploited. Tools like burp suite can help
+in finding ways to attack the site, but are not required. Please submit these
+attacks in a folder called `part1` in your git repository.
 
 Finally, fix the vulnerabilites that are exploited by your attacks, 
 and verify that the attacks no long succeed on your site. You are 
 allowed to use django plugins and other libraries to fix these 
 vulnerabilities. To make sure that these bugs don't come up again as
-the code evolves, write some test cases for django that test for 
-these vulnerabilites. Then have GitHub Actions run these tests with each push.
+the code evolves, write some test cases for django that verify that the
+vulnerability is no longer present. Then have GitHub Actions run these tests
+with each push.
+
+Tests can be run using Django's [built-in test
+infrastructure](https://docs.djangoproject.com/en/4.0/topics/testing/tools/).
+Just create your tests in `LegacySite/tests.py` and then run `python manage.py
+test`. You should be able to write all of your tests using the built-in
+Django test client--there's no need to use something like Selenium.
 
 When you are finished with this section, please mark your part 1 
-submission by tagging the desired commit with the tag "part_1_complete"
+submission by tagging the desired commit with the tag "part_1_complete". You
+can do this with:
+
+```
+git tag part_1_complete
+git push --tags
+```
+
+If you need to tag a commit other than the current commit, you can do:
+
+```
+git tag part_1_complete commit_hash
+git push --tags
+```
 
 ## Part 2: Encrypting the Database 
 
@@ -114,20 +139,21 @@ When you are finished with this part of the assignment, please briefly explain
 how you implemented the database encryption, how you managed keys, and why you
 choose to manage keys that way. You should also note any problems you
 encountered implementing database encryption and how these were resolved. This
-should be stored in a file called "encryption_explanation.txt" in a folder
-called "part 2" in the git repository. 
+should be stored in a file called `encryption_explanation.txt` in a folder
+called `part2` in the git repository. 
 
 When you finish this part of the assignment, please mark your part 2 
-submission by tagging the desired commit with the tag "part_2_complete"
+submission by tagging the desired commit with the tag "part_2_complete".
 
 Hints:
 
-* You may want to look into the [django-cryptography](https://github.com/georgemarshall/django-cryptography) package.
+* You may want to look into the [djfernet](https://djfernet.readthedocs.io/en/latest/) package.
+
+* You only need to encrypt the `Card.data` field, but you can try encrypting other fields if you like.
 
 * Not all database fields can be encrypted -- in particular, keys that are used for the structure of the database, like primary and foreign keys, cannot be encrypted.
 
-* You should test the functionality of the site after encrypting a field. You may find that some functionality (like search) no longer works after encrypting a field. You should modify the application code to fix this.
-
+* You should test the functionality of the site after encrypting a field. You may find that some functionality no longer works after encrypting a field (in particular, the logic used in the `use_card_view` to find a card in the database that matches what the user uploaded will no longer work once you encrypt the card data). You should modify the application code to fix this.
 
 ## Grading
 
@@ -150,6 +176,7 @@ Part 2 is worth 35 points:
 ## What to Submit
 
 On Brightspace, submit a link to your GitHub repository. 
+
 The repository should contain:
 
 * Part 1
@@ -161,7 +188,8 @@ The repository should contain:
     commit can also contain the files mentioned above) tagged as
     part_1_complete.
 * Part 2
-  * A directory named `part2` which contains your `encryption_explanation.txt` file.
+  * A directory named `part2` which contains your 
+    `encryption_explanation.txt` file.
   * A commit with the version of the code that supports DB encryption
     (if you like, this commit can also contain the files mentioned above)
     tagged as part_2_complete.

@@ -1,4 +1,5 @@
 import json
+from django.db.utils import IntegrityError
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from LegacySite.models import User, Product, Card
@@ -6,6 +7,7 @@ from . import extras
 from django.views.decorators.csrf import csrf_protect as csrf_protect
 from django.contrib.auth import login, authenticate, logout
 from django.core.exceptions import ObjectDoesNotExist
+import os, tempfile
 
 SALT_LEN = 16
 
@@ -88,7 +90,7 @@ def buy_card_view(request, prod_num=0):
             prod_num = 1
         num_cards = len(Card.objects.filter(user=request.user))
         # Generate a card here, based on amount sent. Need binary for this.
-        card_file_path = f"/tmp/addedcard_{request.user.id}_{num_cards + 1}.gftcrd'"
+        card_file_path = os.path.join(tempfile.gettempdir(), f"addedcard_{request.user.id}_{num_cards + 1}.gftcrd")
         card_file_name = "newcard.gftcrd"
         # Use binary to write card here.
         # Create card record with data.
@@ -112,7 +114,8 @@ def buy_card_view(request, prod_num=0):
 # KG: What stops an attacker from making me buy a card for him?
 def gift_card_view(request, prod_num=0):
     context = {"prod_num" : prod_num}
-    if request.method == "GET":
+    if request.method == "GET" and 'username' not in request.GET:
+        request.GET.get('director', None)
         context['user'] = None
         director = request.GET.get('director', None)
         if director is not None:
@@ -132,10 +135,18 @@ def gift_card_view(request, prod_num=0):
         context['price'] = prod.recommended_price
         context['description'] = prod.description
         return render(request, "gift.html", context)
-    elif request.method == "POST":
+    # Hack: older partner sites only support GET, so special case this.
+    elif request.method == "POST" \
+        or request.method == "GET" and 'username' in request.GET:
+        if not request.user.is_authenticated:
+            return redirect("/login.html")
         if prod_num == 0:
             prod_num = 1
-        user = request.POST.get('username', None)
+        # Get vars from either post or get
+        user = request.POST.get('username', None) \
+            if request.method == "POST" else request.GET.get('username', None)
+        amount = request.POST.get('amount', None) \
+            if request.method == "POST" else request.GET.get('amount', None)
         if user is None:
             return HttpResponse("ERROR 404")
         try:
@@ -147,17 +158,24 @@ def gift_card_view(request, prod_num=0):
             return render(request, f"gift.html", context)
         context['user'] = user_account
         num_cards = len(Card.objects.filter(user=user_account))
-        card_file_path = f"/tmp/addedcard_{user_account.id}_{num_cards + 1}.gftcrd'"
+        card_file_path = os.path.join(tempfile.gettempdir(), f"addedcard_{user_account.id}_{num_cards + 1}.gftcrd")
         #extras.write_card_data(card_file_path)
         prod = Product.objects.get(product_id=prod_num)
-        amount = request.POST.get('amount', None)
         if amount is None or amount == '':
             amount = prod.recommended_price
         extras.write_card_data(card_file_path, prod, amount, request.user)
         prod = Product.objects.get(product_id=prod_num)
         card_file = open(card_file_path, 'rb')
-        card = Card(data=card_file.read(), product=prod, amount=request.POST.get('amount', prod.recommended_price), fp=card_file_path, user=user_account)
-        card.save()
+        card_data = card_file.read()
+        card = Card(data=card_data, product=prod,
+                    amount=amount, fp=card_file_path, user=user_account)
+        try:
+            card.save()
+        except IntegrityError:
+            # for some reason after we gift a card through GET we get
+            # an IntegrityError here, but the card is saved. So just
+            # ignore it.
+            pass
         card_file.close()
         return render(request, f"gift.html", context)
 
@@ -180,9 +198,9 @@ def use_card_view(request):
         card_file_data = request.FILES['card_data']
         card_fname = request.POST.get('card_fname', None)
         if card_fname is None or card_fname == '':
-            card_file_path = f'/tmp/newcard_{request.user.id}_parser.gftcrd'
+            card_file_path = os.path.join(tempfile.gettempdir(), f'newcard_{request.user.id}_parser.gftcrd')
         else:
-            card_file_path = f'/tmp/{card_fname}_{request.user.id}_parser.gftcrd'
+            card_file_path = os.path.join(tempfile.gettempdir(), f'{card_fname}_{request.user.id}_parser.gftcrd')
         card_data = extras.parse_card_data(card_file_data.read(), card_file_path)
         # check if we know about card.
         # KG: Where is this data coming from? RAW SQL usage with unkown
@@ -190,18 +208,19 @@ def use_card_view(request):
         print(card_data.strip())
         signature = json.loads(card_data)['records'][0]['signature']
         # signatures should be pretty unique, right?
-        card_query = Card.objects.raw('select id from LegacySite_card where data = \'%s\'' % signature)
+        card_query = Card.objects.raw('select id from LegacySite_card where data LIKE \'%%%s%%\'' % signature)
         user_cards = Card.objects.raw('select id, count(*) as count from LegacySite_card where LegacySite_card.user_id = %s' % str(request.user.id))
         card_query_string = ""
+        print("Found %s cards" % len(card_query))
         for thing in card_query:
             # print cards as strings
             card_query_string += str(thing) + '\n'
-        if len(card_query) is 0:
+        if len(card_query) == 0:
             # card not known, add it.
             if card_fname is not None:
-                card_file_path = f'/tmp/{card_fname}_{request.user.id}_{user_cards[0].count + 1}.gftcrd'
+                card_file_path = os.path.join(tempfile.gettempdir(), f'{card_fname}_{request.user.id}_{user_cards[0].count + 1}.gftcrd')
             else:
-                card_file_path = f'/tmp/newcard_{request.user.id}_{user_cards[0].count + 1}.gftcrd'
+                card_file_path = os.path.join(tempfile.gettempdir(), f'newcard_{request.user.id}_{user_cards[0].count + 1}.gftcrd')
             fp = open(card_file_path, 'wb')
             fp.write(card_data)
             fp.close()
@@ -211,7 +230,9 @@ def use_card_view(request):
             try:
                 card = Card.objects.get(data=card_data)
                 card.used = True
+                card.save()
             except ObjectDoesNotExist:
+                print("No card found with data =", card_data)
                 card = None
         context['card'] = card
         return render(request, "use-card.html", context) 
