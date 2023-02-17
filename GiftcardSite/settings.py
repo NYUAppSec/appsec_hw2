@@ -121,14 +121,14 @@ IMAGE_ROOT = os.path.join(BASE_DIR, 'images')
 
 # JS Root.
 
-JS_ROOT = os.path.join(BASE_DIR, "templates/js")
+JS_ROOT = os.path.join(BASE_DIR, 'templates', 'js')
 
 # CSS Root
 
-CSS_ROOT = os.path.join(BASE_DIR, "templates/css")
+CSS_ROOT = os.path.join(BASE_DIR, 'templates', 'css')
 
 # Font Root
-FONT_ROOT = os.path.join(BASE_DIR, "templates/fonts")
+FONT_ROOT = os.path.join(BASE_DIR, 'templates', 'fonts')
 
 # Random Seed for testing
 RANDOM_SEED = base64.b64decode("2RUHYAyJWdDdXOicZfnTRw==")

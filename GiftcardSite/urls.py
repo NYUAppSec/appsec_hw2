@@ -14,15 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.views import static
 from django.conf import settings
 
 urlpatterns = [
-    path('images/<str:path>/', static.serve, {'document_root': settings.IMAGE_ROOT}),
-    path('js/<str:path>/', static.serve, {'document_root': settings.JS_ROOT}),
-    path('css/<str:path>/', static.serve, {'document_root': settings.CSS_ROOT}),
-    path('fonts/<str:path>/', static.serve, {'document_root': settings.FONT_ROOT}),
+    re_path(r'images/(?P<path>[^?]+)', static.serve, {'document_root': settings.IMAGE_ROOT}),
+    re_path('js/(?P<path>[^?]+)', static.serve, {'document_root': settings.JS_ROOT}),
+    re_path('css/(?P<path>[^?]+)', static.serve, {'document_root': settings.CSS_ROOT}),
+    re_path('fonts/(?P<path>[^?]+)', static.serve, {'document_root': settings.FONT_ROOT}),
     path('', include('LegacySite.urls')),
     path('admin/', admin.site.urls),
 ]

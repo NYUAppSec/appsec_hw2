@@ -115,6 +115,8 @@ def buy_card_view(request, prod_num=0):
 def gift_card_view(request, prod_num=0):
     context = {"prod_num" : prod_num}
     if request.method == "GET" and 'username' not in request.GET:
+        if not request.user.is_authenticated:
+            return redirect("/login.html")
         request.GET.get('director', None)
         context['user'] = None
         director = request.GET.get('director', None)
