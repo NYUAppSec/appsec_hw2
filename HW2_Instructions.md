@@ -37,10 +37,7 @@ When you are ready to begin the project, use the Github Classroom invitation to
 create your repository. You should also create a GitHub Actions YAML file, which
 you will use to test your program later.
 
-
-## Part 1: Auditing and Test Cases
-
-After cloning your repository, be sure to generate the database that django
+After cloning your repository, be sure to generate the database that Django
 relies on. This can be done by running the commands:
 
 ```
@@ -59,62 +56,97 @@ following command and browsing to 127.0.0.1:8000.
 python manage.py runserver
 ```
 
+## Part 1: Auditing and Test Cases
+
 For this part, your job will be to find some flaws in the program, and
 then create test cases that expose flaws in the program. You should
 write:
 
 1. *One* attack, that exploits a XSS (cross-site scripting) 
-   vulnerability.
+   vulnerability to call the javascript `alert("hello")`.
 2. *One* attack that allows you to force another user to gift
    a gift card to your account without their knowledge.
 3. *One* attack that allows you to obtain the salted password for a user
    given their username. The database contains a user named 
-   ``admin.'' that you can use for testing the attack.
-4. *One* attack that exploits another attack not listed above on the server.
-   Some hints for this section are: looking at the way the passwords are
-   stored, and looking at how interactions are done with the giftcardreader
-   binary.
+   `admin` that you can use for testing the attack.
+4. *One* attack that allows you to run arbitrary commands on the server.
 5. A text file, `bugs.txt` explaining the bug triggered by each of your
-   attacks, and describing any other vulnerabilities or broken 
-   functionalities you came across. There are more than the bugs mentioned
-   above.
+   attacks.
 
 These attacks can take the form of a supplied URL, a gift card file, a web page,
 a javascript function, or some other method of attack. To create your attacks,
 you may want to look at the HTML source code of the templates and the code of
 each view, and find a way they can be exploited. Tools like burp suite can help
-in finding ways to attack the site, but are not required. Please submit these
-attacks in a folder called `part1` in your git repository.
+in finding ways to attack the site, but are not required.
 
-Finally, fix the vulnerabilites that are exploited by your attacks, 
-and verify that the attacks no long succeed on your site. You are 
-allowed to use django plugins and other libraries to fix these 
-vulnerabilities. To make sure that these bugs don't come up again as
-the code evolves, write some test cases for django that verify that the
-vulnerability is no longer present. Then have GitHub Actions run these tests
-with each push.
+Please submit these attacks in a folder called `part1` in your git repository:
+
+1. `xss.txt`: A URL starting with `http://localhost:8000/` that, when visited in
+   a browser, causes `alert("hello")` to be executed.
+2. `xsrf.html`: An HTML page that, when opened in a browser, causes a gift card
+   to be gifted to a user named `test2` by the currently logged in user.
+3. `sqli.gftcrd`: A gift card file (in JSON format) that, when uploaded to a
+   vulnerable form on the site, that will retrieve the `admin` user's password
+   hash.
+4. `cmdi.txt`: A text file where the first line should be the vulnerable URL,
+   and the remaining lines are of the form `variable=value`, representing a POST
+   request that will execute the command "echo hello" on the server. For example:
+
+   ```
+   http://localhost:8000/foo/2
+   var1=bar
+   var2=baz
+   ```
+
+### Fixes and Testing
+
+Finally, fix the vulnerabilites that are exploited by your attacks, and verify
+that the attacks no long succeed on your site. You are allowed to use Django
+plugins and other libraries to fix these vulnerabilities if necessary, but
+please add any libraries you use to `requirements.txt`. To make sure that these
+bugs don't come up again as the code evolves, write some test cases for Django
+that verify that the vulnerability is no longer present. Then have GitHub
+Actions run these tests with each push.
 
 Tests can be run using Django's [built-in test
 infrastructure](https://docs.djangoproject.com/en/4.0/topics/testing/tools/).
 Just create your tests in `LegacySite/tests.py` and then run `python manage.py
 test`. You should be able to write all of your tests using the built-in
-Django test client--there's no need to use something like Selenium.
+Django test client--there's no need to use something like Selenium. This will
+also simplify your GitHub Actions testing, which can also just run `python
+manage.py test`.
 
-When you are finished with this section, please mark your part 1 
-submission by tagging the desired commit with the tag "part_1_complete". You
-can do this with:
+You also do not need to carry out the actual attack in the test; you can just
+check that your fix is working as intended. For example, when testing CSRF, it
+would be difficult to actually open the `xsrf.html` page and carry out the CSRF
+attack from inside the test case. Instead, you can mimic what the attack does
+by making a request to the right URL without a CSRF token and checking that the
+site returns an error. Likewise for verifying your fix for XSS you can check
+that when getting the attack URL the `<script>` tag is properly escaped.
+
+Note that by default, Django runs your tests with an empty database — which
+means many pages will not work as you expect. The solution for this is to use
+the "fixtures" feature, which lets you load sample data into the test database
+before it runs the test:
 
 ```
-git tag part_1_complete
-git push --tags
+$ mkdir LegacySite/fixtures
+$ python manage.py dumpdata > LegacySite/fixtures/testdata.json
 ```
 
-If you need to tag a commit other than the current commit, you can do:
+Then add at the top of your test case in `LegacySite/tests.py`:
 
 ```
-git tag part_1_complete commit_hash
-git push --tags
+class MyTestCase(TestCase):
+    fixtures = ['testdata.json']
+    # rest of test code goes here
 ```
+
+This will save a copy of the current database contents into
+`LegacySite/fixtures/testdata.json`, and load it when you run the test. You can
+update the fixture data by re-running the `python manage.py dumpdata` command.
+Don't forget to add the `LegacySite/fixtures/testdata.json` file to git so that
+it is available when you run your GitHub Actions workflow!
 
 ## Part 2: Encrypting the Database 
 
@@ -131,7 +163,7 @@ to. The code you received does not encrypt the database at all, but your
 company wants to ensure the data's protection at rest.
 
 Your second job, therefore, is to modify this code to encrypt the gift card
-data in the database. You are allowed to use django plugins or external
+data in the database. You are allowed to use Django plugins or external
 libraries to implement this. Please see the lecture content for tips on proper
 key management and the different methods of doing database encryption.
 
@@ -161,17 +193,17 @@ Total points: 100
 
 Part 1 is worth 65 points:
 
-* 25 points for your attack cases
-* 15 points for all fixes
+* 20 points for your attack cases (5 points for each attack)
+* 20 points for all fixes (5 points for each fix)
 * 10 points for the bug writeup
 * 10 points for GitHub Actions testing
-* 05 points for signed git commits.
+* 05 points for signed git commits
 
 Part 2 is worth 35 points:
 
 * 15 points for encrypted database models
 * 15 points for proper key management
-* 05 points for your writeup.
+* 05 points for your writeup
 
 ## What to Submit
 
@@ -180,19 +212,16 @@ On Brightspace, submit a link to your GitHub repository.
 The repository should contain:
 
 * Part 1
-  * Your GitHub Actions YAML
   * At least one signed commit
   * A directory named `part1` that contains your attack cases.
-  * An updated GitHub Actions YAML that runs your tests.
+  * A GitHub Actions YAML that runs your tests.
   * A commit with the fixed version of the code (if you like, this
-    commit can also contain the files mentioned above) tagged as
-    part_1_complete.
+    commit can also contain the files mentioned above).
 * Part 2
   * A directory named `part2` which contains your 
     `encryption_explanation.txt` file.
   * A commit with the version of the code that supports DB encryption
-    (if you like, this commit can also contain the files mentioned above)
-    tagged as part_2_complete.
+    (if you like, this commit can also contain the files mentioned above).
 
 ## Concluding Remarks
 
