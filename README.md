@@ -5,14 +5,14 @@
 Unfortunately it seems your company never learns. Yet again the company
 has decided to cut costs and hire Shoddycorp's Cut-Rate Contracting to 
 write another program. But after all, your company insists, their *real*
-strength is web sites, and this time they were hired to create a high 
-quality web site. As usual they did not live up to that promise, and
+strength is websites, and this time they were hired to create a high 
+quality website. As usual, they did not live up to that promise, and
 are not answering calls or emails yet again. Just like last time, the
 task of cleaning up their mess falls to you.
 
 The project Shoddycorp's Cut-Rate Contracting was hired to create a 
-web site that facilitated the sale, gifting, and use of gift cards.
-They seemed to have delivered on *most* of the bare funcitonality of
+website that facilitated the sale, gifting, and use of gift cards.
+They seemed to have delivered on *most* of the bare functionality of
 the project, but the code is not in good shape. Luckily Kevin Gallagher
 (KG) has read through the code already and left some comments around
 some of the lines that concern him most. Comments not prefaced by KG were
@@ -26,14 +26,14 @@ In order to complete this assignment you will need the git VCS, GitHub Actions,
 python 3 and the Django web framework (which you can install with `pip install
 django`). Some additional tools that may be useful for this assignment (but are
 not necessary) are sqlite, burp suite, the python requests library, and the web
-development console of your favorite browser. If you are runing a \*NIX system, 
+development console of your favorite browser. If you are running a \*NIX system, 
 these tools should be pre-installed and/or available in your distribution's 
 package manager. Like in the last assignment we will not be checking for git
 best practices like writing good commit messages. However, we will be checking
 for signed commits, since they are security relevant. Additionally, it is in
 your best interest to continue to follow git best practices.
 
-When you are ready to begin the project, use the Github Classroom invitation to
+When you are ready to begin the project, use the GitHub Classroom invitation to
 create your repository. You should also create a GitHub Actions YAML file, which
 you will use to test your program later.
 
@@ -41,19 +41,19 @@ After cloning your repository, be sure to generate the database that Django
 relies on. This can be done by running the commands:
 
 ```
-python manage.py makemigrations LegacySite
-python manage.py migrate
-bash import_dbs.sh
+python3 manage.py makemigrations LegacySite
+python3 manage.py migrate
+python3 manage.py shell -c 'import import_dbs'
 ```
 
 Read through the `models.py` and `views.py` files (and the helper
 functions in `extras.py`) in the LegacySite folder to get a feel 
-for what the web site is doing and how. You can also try running
+for what the website is doing and how. You can also try running
 the test server and interacting with the site by running the
 following command and browsing to 127.0.0.1:8000.
 
 ```
-python manage.py runserver
+python3 manage.py runserver
 ```
 
 ## Part 1: Auditing and Test Cases
@@ -84,7 +84,7 @@ Please submit these attacks in a folder called `part1` in your git repository:
 1. `xss.txt`: A URL starting with `http://localhost:8000/` that, when visited in
    a browser, causes `alert("hello")` to be executed.
 2. `xsrf.html`: An HTML page that, when opened in a browser, causes a gift card
-   to be gifted to a user named `test2` by the currently logged in user.
+   to be gifted to a user named `test2` by the currently logged-in user.
 3. `sqli.gftcrd`: A gift card file (in JSON format) that, when uploaded to a
    vulnerable form on the site, that will retrieve the `admin` user's password
    hash.
@@ -100,7 +100,7 @@ Please submit these attacks in a folder called `part1` in your git repository:
 
 ### Fixes and Testing
 
-Finally, fix the vulnerabilites that are exploited by your attacks, and verify
+Finally, fix the vulnerabilities that are exploited by your attacks, and verify
 that the attacks no long succeed on your site. You are allowed to use Django
 plugins and other libraries to fix these vulnerabilities if necessary, but
 please add any libraries you use to `requirements.txt`. To make sure that these
@@ -150,7 +150,7 @@ it is available when you run your GitHub Actions workflow!
 
 ## Part 2: Encrypting the Database 
 
-Currently the website uses a database that contains valuable gift card
+Currently, the website uses a database that contains valuable gift card
 data. If an attacker gets access to this gift card data, they can use 
 the cards they got to obtain free merchandise, or even pay of their
 tuition with the NYU tuition gift cards! For this reason your company 
@@ -229,11 +229,11 @@ Despite the fixes you've made, there are almost certainly still many
 bugs lurking in the program. Although it is possible to get to a secure
 program by repeatedly finding and fixing bugs, it's a lot of work.
 
-Though this program may be salvagable in its current state, it would be 
+Though this program may be salvageable in its current state, it would be 
 better in this case to rewrite it from scratch, using proper style, 
 using Django addons for security purposes, and sticking to using ORMs 
 and avoiding reflected unfiltered user input to the users. The code as
 it exists now is difficult to read, and therefore difficult to fix. It
-also unecessarily uses home-brewed solutions for things that can be solved
+also unnecessarily uses home-brewed solutions for things that can be solved
 easily with common libraries or Django built-ins. This is certainly not
 code that you should seek to reproduce, or use as an example of good code.

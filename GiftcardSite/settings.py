@@ -150,3 +150,8 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 # Don't know if this is necessary but all this stupid security stuff just
 # makes my job harder
 SESSION_COOKIE_HTTPONLY = False
+
+# DO NOT delete line 154-156, this is for using Django/Gradescope integration
+RUN_GITHUB_ACTIONS = os.environ.get('GITHUB', 'no')
+if os.path.exists('/autograder/results') and os.path.isdir('/autograder/results') or RUN_GITHUB_ACTIONS == 'yes':
+    TEST_RUNNER = 'GiftcardSite.gradescope_django_runner.GradescopeDjangoRunner'
