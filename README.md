@@ -81,7 +81,7 @@ in finding ways to attack the site, but are not required.
 
 Please submit these attacks in a folder called `part1` in your git repository:
 
-1. `xss.txt`: A URL starting with `http://localhost:8000/` that, when visited in
+1. `xss.txt`: A URL starting with `/foo`, when visited in
    a browser, causes `alert("hello")` to be executed.
 2. `xsrf.html`: An HTML page that, when opened in a browser, causes a gift card
    to be gifted to a user named `test2` by the currently logged-in user.
@@ -90,13 +90,16 @@ Please submit these attacks in a folder called `part1` in your git repository:
    hash.
 4. `cmdi.txt`: A text file where the first line should be the vulnerable URL,
    and the remaining lines are of the form `variable=value`, representing a POST
-   request that will execute the command "echo hello" on the server. For example:
+   request that will execute the command "touch pwned" on the server. If successful, 
+   this will create an empty text file called `pwned`. For an example how your file should look like:
 
    ```
-   http://localhost:8000/foo/2
+   /foo/2
    var1=bar
    var2=baz
    ```
+5. `cmdi.gftcrd`: For the `cmdi.txt` to be successful you need a specific giftcard to 
+   trigger the exploit.
 
 ### Fixes and Testing
 
