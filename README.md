@@ -158,6 +158,20 @@ it is available when you run your GitHub Actions workflow!
 
 ## Part 2: Encrypting the Database 
 
+If you take a look at `GiftcardSite/settings.py`, you will notice a variable called `SECRET_KEY`. 
+This value should be kept secret and not hard coded.
+Unfortunately, we don't have access to an HSM. So, you will do the following:
+* Rather than hard-coding the `SECRET_KEY`, you will set this value to be equal to the environment variable also called `SECRET_KEY`.
+  Use the [django-environ](https://pypi.org/project/django-environ/) package.
+
+* However, rather than using a script to populate the 
+  environment variable `SECRET_KEY`,
+  use [GitHub repository secrets](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions).
+  This would ensure that the value of `SECRET_KEY` is safe from any hackers prowling GitHub for credentials. 
+  
+* You can use a `.env` file to test locally, but **DO NOT COMMIT THIS FILE**. Otherwise, there was no point in just ha
+  Otherwise; we just moved the hardcoded variable from one file to another.
+
 Currently, the website uses a database that contains valuable gift card
 data. If an attacker gets access to this gift card data, they can use 
 the cards they got to obtain free merchandise, or even pay off their
