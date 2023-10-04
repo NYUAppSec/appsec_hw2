@@ -169,8 +169,8 @@ Unfortunately, we don't have access to an HSM. So, you will do the following:
   use [GitHub repository secrets](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions).
   This would ensure that the value of `SECRET_KEY` is safe from any hackers prowling GitHub for credentials. 
   
-* You can use a `.env` file to test locally, but **DO NOT COMMIT THIS FILE**. Otherwise, there was no point in just ha
-  Otherwise; we just moved the hardcoded variable from one file to another.
+* You can use a `.env` file to test locally, but **DO NOT COMMIT THIS FILE**.
+  Otherwise, there was no point in just we just moved the hardcoded variable from one file to another.
 
 Currently, the website uses a database that contains valuable gift card
 data. If an attacker gets access to this gift card data, they can use 
