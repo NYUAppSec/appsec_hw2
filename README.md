@@ -2,38 +2,39 @@
 
 ## Introduction
 
-Unfortunately it seems your company never learns. Yet again the company
-has decided to cut costs and hire Shoddycorp's Cut-Rate Contracting to 
-write another program. But after all, your company insists, their *real*
-strength is web sites, and this time they were hired to create a high 
-quality web site. As usual they did not live up to that promise, and
-are not answering calls or emails yet again. Just like last time, the
-task of cleaning up their mess falls to you.
+Unfortunately, it seems your company never learns.
+Yet again, the company has decided to cut costs and hire Shoddycorp's 
+Cut-Rate Contracting to write another program.
+But after all, your company insists, their *real* strength is websites, 
+and this time they were hired to create a high-quality website.
+As usual, they did not live up to that promise, and are not answering calls or emails yet again.
+Just like last time, the task of cleaning up their mess falls to you.
 
 The project Shoddycorp's Cut-Rate Contracting was hired to create a 
-web site that facilitated the sale, gifting, and use of gift cards.
-They seemed to have delivered on *most* of the bare funcitonality of
-the project, but the code is not in good shape. Luckily Kevin Gallagher
-(KG) has read through the code already and left some comments around
-some of the lines that concern him most. Comments not prefaced by KG were
-likely left by the original author. Like with all of Shoddycorp's
+website that facilitated the sale, gifting, and use of gift cards.
+They seemed to have delivered on *most* of the bare functionality of
+the project, but the code is not in good shape.
+Luckily, Kevin Gallagher (KG) has read through the code already and left 
+some comments around some of the lines that concern him most.
+Comments not prefaced by KG were likely left by the original author.
+Like with all of Shoddycorp's
 Cut-Rate Contracting deliverables, this is not code you would like to
 mimic in any way.
 
 ## Part 0: Setting up Your Environment
 
-In order to complete this assignment you will need the git VCS, GitHub Actions, 
+In order to complete this assignment, you will need the git VCS, GitHub Actions, 
 python 3 and the Django web framework (which you can install with `pip install
 django`). Some additional tools that may be useful for this assignment (but are
 not necessary) are sqlite, burp suite, the python requests library, and the web
-development console of your favorite browser. If you are runing a \*NIX system, 
-these tools should be pre-installed and/or available in your distribution's 
-package manager. Like in the last assignment we will not be checking for git
+development console of your favorite browser. If you are running a \*NIX system, 
+these tools should be preinstalled and/or available in your distribution's 
+package manager. Like in the last assignment, we will not be checking for git
 best practices like writing good commit messages. However, we will be checking
-for signed commits, since they are security relevant. Additionally, it is in
+for signed commits since they are security relevant. Additionally, it is in
 your best interest to continue to follow git best practices.
 
-When you are ready to begin the project, use the Github Classroom invitation to
+When you are ready to begin the project, use the GitHub Classroom invitation to
 create your repository. You should also create a GitHub Actions YAML file, which
 you will use to test your program later.
 
@@ -41,19 +42,19 @@ After cloning your repository, be sure to generate the database that Django
 relies on. This can be done by running the commands:
 
 ```
-python manage.py makemigrations LegacySite
-python manage.py migrate
-bash import_dbs.sh
+python3 manage.py makemigrations LegacySite
+python3 manage.py migrate
+python3 manage.py shell -c 'import import_dbs'
 ```
 
 Read through the `models.py` and `views.py` files (and the helper
 functions in `extras.py`) in the LegacySite folder to get a feel 
-for what the web site is doing and how. You can also try running
+for what the website is doing and how. You can also try running
 the test server and interacting with the site by running the
 following command and browsing to 127.0.0.1:8000.
 
 ```
-python manage.py runserver
+python3 manage.py runserver
 ```
 
 ## Part 1: Auditing and Test Cases
@@ -81,31 +82,38 @@ in finding ways to attack the site, but are not required.
 
 Please submit these attacks in a folder called `part1` in your git repository:
 
-1. `xss.txt`: A URL starting with `http://localhost:8000/` that, when visited in
+1. `xss.txt`: A URL starting with `/foo`, when visited in
    a browser, causes `alert("hello")` to be executed.
 2. `xsrf.html`: An HTML page that, when opened in a browser, causes a gift card
-   to be gifted to a user named `test2` by the currently logged in user.
+   to be gifted to a user named `test2` by the currently logged-in user.
 3. `sqli.gftcrd`: A gift card file (in JSON format) that, when uploaded to a
    vulnerable form on the site, that will retrieve the `admin` user's password
    hash.
 4. `cmdi.txt`: A text file where the first line should be the vulnerable URL,
    and the remaining lines are of the form `variable=value`, representing a POST
-   request that will execute the command "echo hello" on the server. For example:
+   request that will execute the command `touch pwned` on the server.
+   If successful, this will create an empty text file called `pwned`.
+   For example, your file should look like:
 
    ```
-   http://localhost:8000/foo/2
+   /foo/2
    var1=bar
    var2=baz
    ```
+5. `cmdi.gftcrd`: For the `cmdi.txt` to be successful you need a specific giftcard to 
+   trigger the exploit too.
 
 ### Fixes and Testing
 
-Finally, fix the vulnerabilites that are exploited by your attacks, and verify
-that the attacks no long succeed on your site. You are allowed to use Django
+Finally, fix the vulnerabilities that are exploited by your attacks, and verify
+that the attacks no longer succeed on your site.
+You are allowed to use Django
 plugins and other libraries to fix these vulnerabilities if necessary, but
-please add any libraries you use to `requirements.txt`. To make sure that these
+please add any libraries you use to `requirements.txt`.
+To make sure that these
 bugs don't come up again as the code evolves, write some test cases for Django
-that verify that the vulnerability is no longer present. Then have GitHub
+that verify that the vulnerability is no longer present.
+Then have GitHub
 Actions run these tests with each push.
 
 Tests can be run using Django's [built-in test
@@ -150,10 +158,24 @@ it is available when you run your GitHub Actions workflow!
 
 ## Part 2: Encrypting the Database 
 
-Currently the website uses a database that contains valuable gift card
+If you take a look at `GiftcardSite/settings.py`, you will notice a variable called `SECRET_KEY`. 
+This value should be kept secret and not hard coded.
+Unfortunately, we don't have access to an HSM. So, you will do the following:
+* Rather than hard-coding the `SECRET_KEY`, you will set this value to be equal to the environment variable also called `SECRET_KEY`.
+  Use the [django-environ](https://pypi.org/project/django-environ/) package.
+
+* However, rather than using a script to populate the 
+  environment variable `SECRET_KEY`,
+  use [GitHub repository secrets](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions).
+  This would ensure that the value of `SECRET_KEY` is safe from any hackers prowling GitHub for credentials. 
+  
+* You can use a `.env` file to test locally, but **DO NOT COMMIT THIS FILE**.
+  Otherwise, there was no point in just we just moved the hardcoded variable from one file to another.
+
+Currently, the website uses a database that contains valuable gift card
 data. If an attacker gets access to this gift card data, they can use 
-the cards they got to obtain free merchandise, or even pay of their
-tuition with the NYU tuition gift cards! For this reason your company 
+the cards they got to obtain free merchandise, or even pay off their
+tuition with the NYU tuition gift cards! For this reason, your company 
 needs to make sure that even if the database somehow leaks, the attacker
 will have a hard time using the cards.
 
@@ -175,7 +197,7 @@ should be stored in a file called `encryption_explanation.txt` in a folder
 called `part2` in the git repository. 
 
 When you finish this part of the assignment, please mark your part 2 
-submission by tagging the desired commit with the tag "part_2_complete".
+submission by tagging the desired commit with the tag "part_2_complete."
 
 Hints:
 
@@ -183,7 +205,7 @@ Hints:
 
 * You only need to encrypt the `Card.data` field, but you can try encrypting other fields if you like.
 
-* Not all database fields can be encrypted -- in particular, keys that are used for the structure of the database, like primary and foreign keys, cannot be encrypted.
+* Not all database fields can be encrypted, in particular, keys that are used for the structure of the database, like primary and foreign keys, cannot be encrypted.
 
 * You should test the functionality of the site after encrypting a field. You may find that some functionality no longer works after encrypting a field (in particular, the logic used in the `use_card_view` to find a card in the database that matches what the user uploaded will no longer work once you encrypt the card data). You should modify the application code to fix this.
 
@@ -207,7 +229,13 @@ Part 2 is worth 35 points:
 
 ## What to Submit
 
-On Brightspace, submit a link to your GitHub repository. 
+In order to submit your code, please only submit a file called `git_link.txt` that contains the name of your repository. 
+For example, if your GitHub account username is exampleaccount, you would submit a text file named `git_link.txt` to 
+Gradescope with only one line that reads the following:
+
+    assignment-1-exampleaccount
+
+The auto-grader will automatically find your code and download it.
 
 The repository should contain:
 
@@ -229,11 +257,11 @@ Despite the fixes you've made, there are almost certainly still many
 bugs lurking in the program. Although it is possible to get to a secure
 program by repeatedly finding and fixing bugs, it's a lot of work.
 
-Though this program may be salvagable in its current state, it would be 
+Though this program may be salvageable in its current state, it would be 
 better in this case to rewrite it from scratch, using proper style, 
 using Django addons for security purposes, and sticking to using ORMs 
 and avoiding reflected unfiltered user input to the users. The code as
 it exists now is difficult to read, and therefore difficult to fix. It
-also unecessarily uses home-brewed solutions for things that can be solved
+also unnecessarily uses home-brewed solutions for things that can be solved
 easily with common libraries or Django built-ins. This is certainly not
-code that you should seek to reproduce, or use as an example of good code.
+code that you should seek to reproduce or use as an example of good code.
