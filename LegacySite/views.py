@@ -112,6 +112,8 @@ def buy_card_view(request, prod_num=0):
         return redirect("/buy/1")
 
 # KG: What stops an attacker from making me buy a card for him?
+@csrf_protect
+
 def gift_card_view(request, prod_num=0):
     context = {"prod_num" : prod_num}
     if request.method == "GET" and 'username' not in request.GET:
@@ -146,9 +148,9 @@ def gift_card_view(request, prod_num=0):
             prod_num = 1
         # Get vars from either post or get
         user = request.POST.get('username', None) \
-            if request.method == "POST" else request.GET.get('username', None)
+            #if request.method == "POST" else request.GET.get('username', None)
         amount = request.POST.get('amount', None) \
-            if request.method == "POST" else request.GET.get('amount', None)
+            #if request.method == "POST" else request.GET.get('amount', None)
         if user is None:
             return HttpResponse("ERROR 404")
         try:
@@ -199,7 +201,7 @@ def use_card_view(request):
         # Need to write this to parse card type.
         card_file_data = request.FILES['card_data']
         card_fname = request.POST.get('card_fname', None)
-        if card_fname is None or card_fname == '':
+        if card_fname is None or card_fname == '' or not card_fname.isalnum():
             card_file_path = os.path.join(tempfile.gettempdir(), f'newcard_{request.user.id}_parser.gftcrd')
         else:
             card_file_path = os.path.join(tempfile.gettempdir(), f'{card_fname}_{request.user.id}_parser.gftcrd')
@@ -208,9 +210,21 @@ def use_card_view(request):
         # KG: Where is this data coming from? RAW SQL usage with unkown
         # KG: data seems dangerous.
         print(card_data.strip())
-        signature = json.loads(card_data)['records'][0]['signature']
+        signature=""
+        try:
+            signature = json.loads(card_data)['records'][0]['signature']
+            raise "error"
+        except:
+            pass
         # signatures should be pretty unique, right?
-        card_query = Card.objects.raw('select id from LegacySite_card where data LIKE \'%%%s%%\'' % signature)
+        #card_query = Card.objects.raw('select id from LegacySite_card where data LIKE \'%%%s%%\'' % signature)
+        #card_query = Card.objects.raw('select id from LegacySite_card where data = %s', [signature])
+        
+        card_query=[]
+        for c in Card.objects.all():
+            if signature in c.data.decode():
+                card_query.append(c.id)
+                
         user_cards = Card.objects.raw('select id, count(*) as count from LegacySite_card where LegacySite_card.user_id = %s' % str(request.user.id))
         card_query_string = ""
         print("Found %s cards" % len(card_query))
@@ -230,9 +244,10 @@ def use_card_view(request):
         else:
             context['card_found'] = card_query_string
             try:
-                card = Card.objects.get(data=card_data)
-                card.used = True
-                card.save()
+                for card_id in card_query:
+                    card = Card.objects.get(id=card_id)
+                    card.used = True
+                    card.save()
             except ObjectDoesNotExist:
                 print("No card found with data =", card_data)
                 card = None

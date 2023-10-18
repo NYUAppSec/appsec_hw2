@@ -1,0 +1,1 @@
+{"merchant_id": "NYU Apparel Card", "customer_id": "test2", "total_value": 95, "records": [{"record_type": "amount_change", "amount_added": 2000, "signature": " 'ls | echo "Something wrong here" " }]}
