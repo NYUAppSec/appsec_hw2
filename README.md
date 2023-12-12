@@ -82,7 +82,7 @@ write:
    `admin` that you can use for testing the attack.
 4. *One* attack that allows you to run arbitrary commands on the server.
 5. A text file, `bugs.txt` explaining the bug triggered by each of your
-   attacks.
+   attacks and how to remediate each bug.
 
 These attacks can take the form of a supplied URL, a gift card file, a web page,
 a javascript function, or some other method of attack. To create your attacks,
