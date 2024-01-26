@@ -234,15 +234,15 @@ Part 1 is worth 65 points:
 
 * 20 points for your attack cases (5 points for each attack)
 * 20 points for all fixes (5 points for each fix)
-* 10 points for the bug writeup
-* 10 points for GitHub Actions testing
+* 15 points for the bug writeup
+* 05 points for GitHub Actions testing
 * 05 points for signed git commits
 
 Part 2 is worth 35 points:
 
 * 15 points for encrypted database models
-* 15 points for proper key management
-* 05 points for your writeup
+* 10 points for proper key management
+* 10 points for your writeup
 
 ## What to Submit
 
