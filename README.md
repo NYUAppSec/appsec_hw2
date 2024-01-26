@@ -104,14 +104,12 @@ Please submit these attacks in a folder called `part1` in your git repository:
    request that will execute the command `touch pwned` on the server.
    If successful, this will create an empty text file called `pwned`.
    For example, your file should look like:
-
    ```
    /foo/2
    var1=bar
    var2=baz
    ```
-5. `cmdi.gftcrd`: For the `cmdi.txt` to be successful you need a specific giftcard to 
-   trigger the exploit too.
+    `cmdi.gftcrd`: a gift card file that is uploaded with your command injection request.
 
 ### Fixes and Testing
 
@@ -248,13 +246,10 @@ Part 2 is worth 35 points:
 
 ## What to Submit
 
-To submit your code, please only submit a file called `git_link.txt` that contains the name of your repository. 
-For example, if your GitHub account username is exampleaccount, you would submit a text file named `git_link.txt` to 
-Gradescope with only one line that reads the following:
+To submit your code, please only submit a file called `git_link.txt` that contains the name of your repository to **Gradescope**.
+For example, if your GitHub account username is exampleaccount, you would submit a text file named `git_link.txt` with only one line that reads the following:
 
-    assignment-1-exampleaccount
-
-The auto-grader will automatically find your code and download it.
+    assignment-2-exampleaccount
 
 The repository should contain:
 
