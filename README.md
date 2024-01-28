@@ -168,7 +168,7 @@ it is available when you run your GitHub Actions workflow!
 If you’d like to submit this part, push the `hw2p1handin` tag with the following:
 
     git tag -a -m "Completed hw2 part1." hw1p1handin
-    git push origin main
+    git push origin master
     git push origin hw2p1handin
 
 ## Part 2: Encrypting the Database 
@@ -237,7 +237,7 @@ Hints:
 If you’d like to submit this part, push the `hw2p2handin` tag with the following:
 
     git tag -a -m "Completed hw2 part2." hw2p2handin
-    git push origin main
+    git push origin master
     git push origin hw2p2handin
 
 ## Grading
