@@ -164,6 +164,13 @@ update the fixture data by re-running the `python manage.py dumpdata` command.
 Remember to add the `LegacySite/fixtures/testdata.json` file to git so that
 it is available when you run your GitHub Actions workflow!
 
+### Submission
+If you’d like to submit this part, push the `hw2p1handin` tag with the following:
+
+    git tag -a -m "Completed hw2 part1." hw1p1handin
+    git push origin main
+    git push origin hw2p1handin
+
 ## Part 2: Encrypting the Database 
 
 If you take a look at `GiftcardSite/settings.py`, you will notice a variable called `SECRET_KEY`. 
@@ -225,6 +232,13 @@ Hints:
 * Not all database fields can be encrypted, in particular, keys that are used for the structure of the database, like primary and foreign keys, cannot be encrypted.
 
 * You should test the functionality of the site after encrypting a field. You may find that some functionality no longer works after encrypting a field (in particular, the logic used in the `use_card_view` to find a card in the database that matches what the user uploaded will no longer work once you encrypt the card data). You should modify the application code to fix this.
+
+### Submission
+If you’d like to submit this part, push the `hw2p2handin` tag with the following:
+
+    git tag -a -m "Completed hw2 part2." hw2p2handin
+    git push origin main
+    git push origin hw2p2handin
 
 ## Grading
 
