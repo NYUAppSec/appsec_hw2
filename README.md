@@ -6,7 +6,7 @@ Use the following commands to pull the latest updates.
 ```bash
 git remote add upstream https://github.com/NYUAppSec/appsec_hw2
 git fetch upstream
-git merge upstream/master --allow-unrelated-histories
+git merge upstream/main --allow-unrelated-histories
 git push
 ```
 
@@ -83,6 +83,7 @@ write:
 4. *One* attack that allows you to run arbitrary commands on the server.
 5. A text file, `bugs.txt` explaining the bug triggered by each of your
    attacks and how to remediate each bug.
+   This write-up should be stored in the root of the repository.
 
 These attacks can take the form of a supplied URL, a gift card file, a web page,
 a javascript function, or some other method of attack. To create your attacks,
@@ -167,8 +168,8 @@ it is available when you run your GitHub Actions workflow!
 ### Submission
 If you’d like to submit this part, push the `hw2p1handin` tag with the following:
 
-    git tag -a -m "Completed hw2 part1." hw1p1handin
-    git push origin master
+    git tag -a -m "Completed hw2 part1." hw2p1handin
+    git push origin main
     git push origin hw2p1handin
 
 ## Part 2: Encrypting the Database 
@@ -217,8 +218,7 @@ When you are finished with this part of the assignment, please briefly explain
 how you implemented the database encryption, how you managed keys, and why you
 choose to manage keys that way. You should also note any problems you
 encountered implementing database encryption and how these were resolved. This
-should be stored in a file called `encryption_explanation.txt` in a folder
-called `part2` in the git repository. 
+should be stored in a file called `encryption_explanation.txt` in the root of the repository.
 
 When you finish this part of the assignment, please mark your part 2 
 submission by tagging the desired commit with the tag "part_2_complete."
@@ -237,7 +237,7 @@ Hints:
 If you’d like to submit this part, push the `hw2p2handin` tag with the following:
 
     git tag -a -m "Completed hw2 part2." hw2p2handin
-    git push origin master
+    git push origin main
     git push origin hw2p2handin
 
 ## Grading
