@@ -23,7 +23,7 @@ class MyTest(TestCase):
     #    python manage.py dumpdata LegacySite --indent=4> LegacySite/fixtures/testdata.json
     # You can read more about fixtures here:
     #    https://docs.djangoproject.com/en/4.0/topics/testing/tools/#fixture-loading
-    # When you create your fixture, remember to uncomment line 14
+    # When you create your fixture, remember to uncomment the line where, fixtures = ["testdata.json"]
     # fixtures = ["testdata.json"]
 
     """
