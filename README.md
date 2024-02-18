@@ -220,9 +220,6 @@ choose to manage keys that way. You should also note any problems you
 encountered implementing database encryption and how these were resolved. This
 should be stored in a file called `encryption_explanation.txt` in the root of the repository.
 
-When you finish this part of the assignment, please mark your part 2 
-submission by tagging the desired commit with the tag "part_2_complete."
-
 Hints:
 
 * You may want to look into the [djfernet](https://djfernet.readthedocs.io/en/latest/) package.
@@ -265,17 +262,24 @@ For example, if your GitHub account username is exampleaccount, you would submit
 
     appsec-homework-2-exampleaccount
 
+The TA will also be looking for the following files on your Gradescope:
+* `bugs.txt`
+* `encryption_explanation.txt`
+
+Having the write-ups uploaded makes it easier for the TA to grade the write-up as it saves them time traversing your GitHub repository.
+Please be sure to have your written parts in your repository too.
+    
 The repository should contain:
 
 * Part 1
   * At least one signed commit
   * A directory named `part1` that contains your attack cases.
+  * Your `bugs.txt` file at the root of your repository
   * A GitHub Actions YAML that runs your tests.
   * A commit with the fixed version of the code (if you like, this
     commit can also contain the files mentioned above).
 * Part 2
-  * A directory named `part2` which contains your 
-    `encryption_explanation.txt` file.
+  * Your `encryption_explanation.txt` file at the root of your repository
   * A commit with the version of the code that supports DB encryption
     (if you like, this commit can also contain the files mentioned above).
 
