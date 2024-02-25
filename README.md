@@ -97,10 +97,11 @@ Please submit these attacks in a folder called `part1` in your git repository:
    a browser, causes `alert("hello")` to be executed.
 2. `xsrf.html`: An HTML page that, when opened in a browser, causes a gift card
    to be gifted to a user named `test2` by the currently logged-in user.
-3. `sqli.gftcrd`: A gift card file (in JSON format) that, when uploaded to a
+   This user is already created for you by default, and will have the password `test2`.
+4. `sqli.gftcrd`: A gift card file (in JSON format) that, when uploaded to a
    vulnerable form on the site, that will retrieve the `admin` user's password
    hash.
-4. `cmdi.txt`: A text file where the first line should be the vulnerable URL,
+5. `cmdi.txt`: A text file where the first line should be the vulnerable URL,
    and the remaining lines are of the form `variable=value`, representing a POST
    request that will execute the command `touch pwned` on the server.
    If successful, this will create an empty text file called `pwned`.
