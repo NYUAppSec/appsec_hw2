@@ -149,7 +149,7 @@ before it runs the test:
 
 ```
 $ mkdir LegacySite/fixtures
-$ python manage.py dumpdata > LegacySite/fixtures/testdata.json
+$ python manage.py dumpdata -o LegacySite/fixtures/testdata.json
 ```
 
 Then add at the top of your test case in `LegacySite/tests.py`:
