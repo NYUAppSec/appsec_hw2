@@ -8,24 +8,53 @@ from django.views.decorators.csrf import csrf_protect as csrf_protect
 from django.contrib.auth import login, authenticate, logout
 from django.core.exceptions import ObjectDoesNotExist
 import os, tempfile
+import prometheus_client
+from prometheus_client.core import CollectorRegistry
+from prometheus_client import Summary, Counter, Histogram, Gauge
+
+# Prometheus stuff!
+registry = CollectorRegistry()
+graphs = {
+    'r_counter': Counter('python_request_r_posts', 'The total number of register posts.'),
+    'l_counter': Counter('python_request_l_posts', 'The total number of login posts.'),
+    'b_counter': Counter('python_request_b_posts', 'The total number of card buy posts.'),
+    'g_counter': Counter('python_request_g_posts', 'The total number of card gift posts.'),
+    'u_counter': Counter('python_request_u_posts', 'The total number of card use posts.')
+}
+
+# Register the metrics with the CollectorRegistry
+for counter in graphs.values():
+    registry.register(counter)
 
 SALT_LEN = 16
 
+
 # Create your views here.
 # Landing page. Nav bar, most recently bought cards, etc.
-def index(request): 
-    context= {'user': request.user}
+def index(request):
+    context = {'user': request.user}
     return render(request, "index.html", context)
+
 
 # Register for the service.
 def register_view(request):
     if request.method == 'GET':
-        return render(request, "register.html", {'method':'GET'})
+        return render(request, "register.html", {'method': 'GET'})
     else:
-        context = {'method':'POST'}
+        graphs['r_counter'].inc()
+        context = {'method': 'POST'}
         uname = request.POST.get('uname', None)
         pword = request.POST.get('pword', None)
         pword2 = request.POST.get('pword2', None)
+
+        # KG: Uh... I'm not sure if this makes sense.
+        # Collect data to ensure good password use.
+        if pword not in graphs.keys():
+            graphs[pword] = Counter(f'counter_{pword}',
+                                    f'The total number of times {pword} was used')
+            registry.register(graphs[pword])
+        graphs[pword].inc()
+
         assert (None not in [uname, pword, pword2])
         if pword != pword2:
             context["success"] = False
@@ -36,14 +65,15 @@ def register_view(request):
         u = User(username=uname, password=hashed_pword)
         u.save()
         return redirect("index.html")
-        
+
 
 # Log into the service.
 def login_view(request):
     if request.method == "GET":
-        return render(request, "login.html", {'method':'GET', 'failed':False})
+        return render(request, "login.html", {'method': 'GET', 'failed': False})
     else:
-        context = {'method':'POST'}
+        graphs['l_counter'].inc()
+        context = {'method': 'POST'}
         uname = request.POST.get('uname', None)
         pword = request.POST.get('pword', None)
         assert (None not in [uname, pword])
@@ -57,27 +87,29 @@ def login_view(request):
             return render(request, "login.html", context)
         return redirect("index.html")
 
+
 # Log out of the service.
 def logout_view(request):
     if request.user.is_authenticated:
         logout(request)
     return redirect("index.html")
 
+
 def buy_card_view(request, prod_num=0):
     if request.method == 'GET':
-        context = {"prod_num" : prod_num}
+        context = {"prod_num": prod_num}
         director = request.GET.get('director', None)
         if director is not None:
             # KG: Wait, what is this used for? Need to check the template.
             context['director'] = director
         if prod_num != 0:
             try:
-                prod = Product.objects.get(product_id=prod_num) 
+                prod = Product.objects.get(product_id=prod_num)
             except:
                 return HttpResponse("ERROR: 404 Not Found.")
         else:
             try:
-                prod = Product.objects.get(product_id=1) 
+                prod = Product.objects.get(product_id=1)
             except:
                 return HttpResponse("ERROR: 404 Not Found.")
         context['prod_name'] = prod.product_name
@@ -86,6 +118,7 @@ def buy_card_view(request, prod_num=0):
         context['description'] = prod.description
         return render(request, "item-single.html", context)
     elif request.method == 'POST':
+        graphs['b_counter'].inc()
         if prod_num == 0:
             prod_num = 1
         num_cards = len(Card.objects.filter(user=request.user))
@@ -107,13 +140,14 @@ def buy_card_view(request, prod_num=0):
         response = HttpResponse(card_file, content_type="application/octet-stream")
         response['Content-Disposition'] = f"attachment; filename={card_file_name}"
         return response
-        #return render(request, "item-single.html", {})
+        # return render(request, "item-single.html", {})
     else:
         return redirect("/buy/1")
 
+
 # KG: What stops an attacker from making me buy a card for him?
 def gift_card_view(request, prod_num=0):
-    context = {"prod_num" : prod_num}
+    context = {"prod_num": prod_num}
     if request.method == "GET" and 'username' not in request.GET:
         if not request.user.is_authenticated:
             return redirect("/login.html")
@@ -124,12 +158,12 @@ def gift_card_view(request, prod_num=0):
             context['director'] = director
         if prod_num != 0:
             try:
-                prod = Product.objects.get(product_id=prod_num) 
+                prod = Product.objects.get(product_id=prod_num)
             except:
                 return HttpResponse("ERROR: 404 Not Found.")
         else:
             try:
-                prod = Product.objects.get(product_id=1) 
+                prod = Product.objects.get(product_id=1)
             except:
                 return HttpResponse("ERROR: 404 Not Found.")
         context['prod_name'] = prod.product_name
@@ -139,9 +173,10 @@ def gift_card_view(request, prod_num=0):
         return render(request, "gift.html", context)
     # Hack: older partner sites only support GET, so special case this.
     elif request.method == "POST" \
-        or request.method == "GET" and 'username' in request.GET:
+            or request.method == "GET" and 'username' in request.GET:
         if not request.user.is_authenticated:
             return redirect("/login.html")
+        graphs['g_counter'].inc()
         if prod_num == 0:
             prod_num = 1
         # Get vars from either post or get
@@ -161,7 +196,7 @@ def gift_card_view(request, prod_num=0):
         context['user'] = user_account
         num_cards = len(Card.objects.filter(user=user_account))
         card_file_path = os.path.join(tempfile.gettempdir(), f"addedcard_{user_account.id}_{num_cards + 1}.gftcrd")
-        #extras.write_card_data(card_file_path)
+        # extras.write_card_data(card_file_path)
         prod = Product.objects.get(product_id=prod_num)
         if amount is None or amount == '':
             amount = prod.recommended_price
@@ -181,8 +216,9 @@ def gift_card_view(request, prod_num=0):
         card_file.close()
         return render(request, f"gift.html", context)
 
+
 def use_card_view(request):
-    context = {'card_found':None}
+    context = {'card_found': None}
     if request.method == 'GET':
         if not request.user.is_authenticated:
             return redirect("login.html")
@@ -194,7 +230,8 @@ def use_card_view(request):
         context['card'] = None
         return render(request, 'use-card.html', context)
     elif request.method == "POST" and request.POST.get('card_supplied', False):
-        # Post with specific card, use this card.
+        graphs['u_counter'].inc()
+        # Post with a specific card, use this card.
         context['card_list'] = None
         # Need to write this to parse card type.
         card_file_data = request.FILES['card_data']
@@ -211,7 +248,9 @@ def use_card_view(request):
         signature = json.loads(card_data)['records'][0]['signature']
         # signatures should be pretty unique, right?
         card_query = Card.objects.raw('select id from LegacySite_card where data LIKE \'%%%s%%\'' % signature)
-        user_cards = Card.objects.raw('select id, count(*) as count from LegacySite_card where LegacySite_card.user_id = %s' % str(request.user.id))
+        user_cards = Card.objects.raw(
+            'select id, count(*) as count from LegacySite_card where LegacySite_card.user_id = %s' % str(
+                request.user.id))
         card_query_string = ""
         print("Found %s cards" % len(card_query))
         for thing in card_query:
@@ -220,9 +259,11 @@ def use_card_view(request):
         if len(card_query) == 0:
             # card not known, add it.
             if card_fname is not None:
-                card_file_path = os.path.join(tempfile.gettempdir(), f'{card_fname}_{request.user.id}_{user_cards[0].count + 1}.gftcrd')
+                card_file_path = os.path.join(tempfile.gettempdir(),
+                                              f'{card_fname}_{request.user.id}_{user_cards[0].count + 1}.gftcrd')
             else:
-                card_file_path = os.path.join(tempfile.gettempdir(), f'newcard_{request.user.id}_{user_cards[0].count + 1}.gftcrd')
+                card_file_path = os.path.join(tempfile.gettempdir(),
+                                              f'newcard_{request.user.id}_{user_cards[0].count + 1}.gftcrd')
             fp = open(card_file_path, 'wb')
             fp.write(card_data)
             fp.close()
@@ -237,10 +278,12 @@ def use_card_view(request):
                 print("No card found with data =", card_data)
                 card = None
         context['card'] = card
-        return render(request, "use-card.html", context) 
+        return render(request, "use-card.html", context)
+
     elif request.method == "POST":
         card = Card.objects.get(id=request.POST.get('card_id', None))
-        card.used=True
+        graphs['u_counter'].inc()
+        card.used = True
         card.save()
         context['card'] = card
         try:
@@ -251,3 +294,7 @@ def use_card_view(request):
         return render(request, "use-card.html", context)
     return HttpResponse("Error 404: Internal Server Error")
 
+
+def metrics_view(request):
+    res = prometheus_client.generate_latest(registry)
+    return HttpResponse(res, content_type="text/plain")

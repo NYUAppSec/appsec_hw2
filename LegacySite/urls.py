@@ -27,5 +27,9 @@ urlpatterns = [
     path('use', views.use_card_view, name="Use a card"),
     path('use.html', views.use_card_view, name="Use a card"),
     path('use/', views.use_card_view, name="Use a card"),
-    
+
+    # HW3 stuff
+    path('metrics/', views.metrics_view, name="Prometheus Metrics"),
+    path('metrics', views.metrics_view, name="Prometheus Metrics"),
+    path('metrics.html', views.metrics_view, name="Prometheus Metrics"),
 ]
