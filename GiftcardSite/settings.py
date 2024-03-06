@@ -137,6 +137,10 @@ RANDOM_SEED = base64.b64decode("2RUHYAyJWdDdXOicZfnTRw==")
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/static/media/'
+
+STATIC_ROOT = '/vol/web/static'
+MEDIA_ROOT = '/vol/web/media'
 
 # Auth Backends
 AUTHENTICATION_BACKENDS = ['LegacySite.models.OurBackend']
