@@ -26,7 +26,7 @@ SECRET_KEY = 'kmgysa#fz+9(z1*=c0ydrjizk*7sthm2ga1z4=^61$cxcq8b$l'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -77,8 +77,12 @@ WSGI_APPLICATION = 'GiftcardSite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'GiftcardSiteDB',
+        'HOST': os.environ.get('MYSQL_HOST'),
+        'PORT': '3306',
+        'USER': 'root',
+        'PASSWORD': os.environ.get('MYSQL_ROOT_PASSWORD'),
     }
 }
 
