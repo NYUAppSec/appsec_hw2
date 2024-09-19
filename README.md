@@ -255,7 +255,7 @@ Part 2 is worth 40 points (30 points autograded):
 * 10 points for proper key management
 * 10 points for your writeup (graded manually)
 
-Deductions (don't worry, you can resubmit if your forget these):
+Deductions (don't worry, you can resubmit if you forget these):
 
 * 05 points off if you don't have any signed git commits
 * 25 points off if you don't include your writeups
