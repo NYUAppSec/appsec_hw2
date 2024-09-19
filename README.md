@@ -242,19 +242,28 @@ If you’d like to submit this part, push the `hw2p2handin` tag with the followi
 
 Total points: 100
 
-Part 1 is worth 65 points:
+Part 1 is worth 60 points (45 points autograded):
 
 * 20 points for your attack cases (5 points for each attack)
 * 20 points for all fixes (5 points for each fix)
-* 15 points for the bug writeup
 * 05 points for GitHub Actions testing
-* 05 points for signed git commits
+* 15 points for the bug writeup (graded manually)
 
-Part 2 is worth 35 points:
+Part 2 is worth 40 points (30 points autograded):
 
-* 15 points for encrypted database models
+* 20 points for encrypted database models
 * 10 points for proper key management
-* 10 points for your writeup
+* 10 points for your writeup (graded manually)
+
+Deductions (don't worry, you can resubmit if your forget these):
+
+* 05 points off if you don't have any signed git commits
+* 25 points off if you don't include your writeups
+* 05 points off for every day late up to 5 days (-25 points)
+
+Bonus
+
+* 01 point extra for every day early up to 5 days (+5 points)
 
 ## What to Submit
 
