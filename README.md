@@ -126,10 +126,7 @@ that verify that the vulnerability is no longer present.
 Then have GitHub
 Actions run these tests with each push.
 
-Tests can be run using Django's [built-in test
-infrastructure](https://docs.djangoproject.com/en/4.0/topics/testing/tools/).
-Create your tests in `LegacySite/tests.py` and then run `python manage.py
-test`. You should be able to write all of your tests using the built-in
+Run tests using Django's built-in framework. Add and modify tests in LegacySite/tests.py and execute them with python manage.py test. Use Django's test client for all tests. This approach works seamlessly with GitHub Actions, simplifying your workflow. You should be able to write all of your tests using the built-in
 Django test client--there's no need to use something like Selenium. This will
 also simplify your GitHub Actions testing, which can also just run `python
 manage.py test`.
@@ -178,25 +175,26 @@ If you’d like to submit this part, push the `hw2p1handin` tag with the followi
 If you take a look at `GiftcardSite/settings.py`, you will notice a variable called `SECRET_KEY`. 
 This value should be kept secret and not hard coded.
 Unfortunately, we don't have access to an HSM. So, you will do the following:
-* Rather than hard-coding the `SECRET_KEY`, you will set this value to be equal to the environment variable also called `SECRET_KEY`.
-  Use the [django-environ](https://pypi.org/project/django-environ/) package.
 
+* Rather than hard-coding the `SECRET_KEY`, you will use a GitHub secret.
 
-* However, GitHub Actions does not populate the environment variable `SECRET_KEY` for you automatically, so
-  use [GitHub repository secrets](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions).
-  This would ensure that the value of `SECRET_KEY` is populated and safe from any hackers
-  prowling GitHub for credentials.
-  If you **cannot** create a GitHub repository secret, set the environment 
-  variable `SECRET_KEY` to the value of the secret `GITHUB_TOKEN`.
-  This isn't good practice, 
-  but I do want to familiarize everyone with using secrets. 
-  Since in production, you would want to use a unique and difficult to guess secret.
+* Use [GitHub repository secrets](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions) to store the `SECRET_KEY` value.
+  This ensures that the value of `SECRET_KEY` is populated and safe from any hackers prowling GitHub for credentials.
 
-  
-* You can use `.env` file to test locally once you migrate to storing your credential in the `SECRET_KEY` 
-  environment variable, but **DO NOT COMMIT THIS FILE**.
-  Otherwise, there was no point in just we just moved the hardcoded variable from one file to another.
-  I should note the Gradescope autograder will automatically populate the `SECRET_KEY` environment variable.
+* Modify your `settings.py` to retrieve the `SECRET_KEY` from GitHub secrets. You'll need to research how to access GitHub secrets in your Django settings.
+
+* Update your GitHub Actions workflow to use this secret when running tests or deployments.
+
+* For local development, you can use a `.env` file to store your `SECRET_KEY`, but **DO NOT COMMIT THIS FILE**.
+  Otherwise, there was no point in moving the hardcoded variable to a secret.
+
+* The Gradescope autograder will automatically handle the `SECRET_KEY` for grading purposes, so you don't need to worry about setting it up there.
+
+Using GitHub secrets simulates real-world practices for managing sensitive information in production environments. This approach keeps your secret secure and separate from your codebase.
+
+Using GitHub secrets simulates real-world practices for managing sensitive information in production environments. This approach keeps your secret secure and separate from your codebase, protecting it from potential security threats.
+
+Remember, in a production environment, you would use a unique and difficult-to-guess secret. This exercise helps familiarize you with secure secret management practices.
 
 Currently, the website uses a database that contains valuable gift card
 data. If an attacker gets access to this gift card data, they can use 
