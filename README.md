@@ -258,6 +258,7 @@ Deductions (don't worry, you can resubmit if you forget these):
 * 05 points off if you don't have any signed git commits
 * 25 points off if you don't include your writeups
 * 05 points off for every day late up to 5 days (-25 points)
+* The assignment will not be accepted later than 5 days after the due date (-100 points)
 
 Bonus
 
