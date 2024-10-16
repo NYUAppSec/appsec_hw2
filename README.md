@@ -176,18 +176,19 @@ If you take a look at `GiftcardSite/settings.py`, you will notice a variable cal
 This value should be kept secret and not hard coded.
 Unfortunately, we don't have access to an HSM. So, you will do the following:
 
-* Rather than hard-coding the `SECRET_KEY`, you will use a GitHub secret.
+* Rather than hard-coding the `SECRET_KEY`, you will use a GitHub secret. 
 
 * Use [GitHub repository secrets](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions) to store the `SECRET_KEY` value.
   This ensures that the value of `SECRET_KEY` is populated and safe from any hackers prowling GitHub for credentials.
-
+  
 * Modify your `settings.py` to retrieve the `SECRET_KEY` from GitHub secrets. You'll need to research how to access GitHub secrets in your Django settings.
 
 * Update your GitHub Actions workflow to use this secret when running tests or deployments.
 
 * For local development, you can use a `.env` file to store your `SECRET_KEY`, but **DO NOT COMMIT THIS FILE**.
   Otherwise, there was no point in moving the hardcoded variable to a secret.
-
+  Test/Verify you are able to use .env files before using with your database encryption solution. Know how to retrieve a variable and store a environment variable. Think Unit Testing and Integration Testing!
+  
 * The Gradescope autograder will automatically handle the `SECRET_KEY` for grading purposes, so you don't need to worry about setting it up there.
 
 Using GitHub secrets simulates real-world practices for managing sensitive information in production environments. This approach keeps your secret secure and separate from your codebase.
